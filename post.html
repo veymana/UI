@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<body style="background-color:#F2F3F4;">
+
+    <h2> DEV POSTMAN</h2>
+
+
+
+    <table>
+        <tbody>
+            <tr>
+                <td>METHOD: </td>
+                <td> <select id="method">
+                        <option value="POST">POST</option>
+                        <option value="GET">GET</option>
+                        </br>
+                    </select></td>
+            </tr>
+            <tr>
+                <td>URL: </td>
+                <td> <input type="text" id="url" size="49" value="http://localhost:4200/tcui"></td>
+            </tr>
+            <tr>
+                <td>PAYLOAD: </td>
+                <td><textarea rows="4" cols="50" id="payload"></textarea> </td>
+            </tr>
+            <tr>
+                <td> CSRF-TOKEN:</td>
+                <td> <input type="text" id="csrf" size="49"></td>
+            </tr>
+            <tr>
+                <td> XSRF-TOKEN:</td>
+                <td><input type="text" id="xsrf" size="49"> </td>
+            </tr>
+            <tr>
+                <td>DBL-PST-TOKEN: </td>
+                <td><input type="text" id="hash" size="49"> </td>
+            </tr>
+            <tr>
+                <td> </td>
+                <td> <button type="button" onclick="submitData()">SUBMIT</button> </td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>RESPONSE</h2>
+
+    <p id="resp"></p>
+
+    <script>
+        function submitData() {
+
+            var data_json = '';
+            var data = '';
+
+            var method = document.querySelector('#method').value;
+            var url = document.querySelector('#url').value;
+            var payload = document.querySelector('#payload').value;
+
+            var csrf = document.querySelector('#csrf').value;
+            var xsrf = document.querySelector('#xsrf').value;
+            var hash = document.querySelector('#hash').value;
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    document.getElementById("resp").innerHTML = this.responseText;
+                }
+            };
+            if (method == 'POST') {
+                try {
+                    data_json = JSON.parse(payload);
+                } catch (err) {
+                    document.getElementById("resp").innerHTML = "INVALID JSON";
+                    return false;
+                }
+            } else {
+                url = url + '?' + payload;
+            }
+
+            xhttp.open(method, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            xhttp.setRequestHeader('X-CSRF-TOKEN', csrf);
+            xhttp.setRequestHeader('X-XSRF-TOKEN', xsrf);
+            xhttp.setRequestHeader('X-DOUBLE-POST-TOKEN', hash);
+            data = JSON.stringify(data_json);
+
+            xhttp.send(data);
+        }
+    </script>
+
+</body>
+
+</html>
